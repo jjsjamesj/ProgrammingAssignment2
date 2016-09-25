@@ -1,15 +1,39 @@
-## Put comments here that give an overall description of what your
-## functions do
+## makeCacheMatrix takes as argument a square invertible matrix
+## and returns a list of getter and setter methods for the matrix
+## and its inverse.
 
-## Write a short comment describing this function
+## code of the form 'X<<-Y' assigns to X in the parent environment
 
-makeCacheMatrix <- function(x = matrix()) {
-
+makeCacheMatrix <- function(x =matrix() ) {
+  xinverse <- NULL
+  set <- function(y) {
+    x <<- y                     
+    xinverse <<- NULL           
+  }
+  get <- function() x
+  setxinverse <- function(inverse){xinverse <<- inverse} 
+  getxinverse <- function() xinverse
+  list(set = set, get = get,
+       setxinverse = setxinverse,
+       getxinverse = getxinverse)
 }
 
+## cacheSolve takes as argument a list, such as type returned by 
+## makeCacheMatrix. It then checks whether or not the inverse is already
+## cached. If the inverse is already cached, it returns the cached inverse
+## If the inverse is not already cached, then it calls solve()
+## and the inverse setter method, and then returns the inverse. 
 
-## Write a short comment describing this function
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  Xinverse <- x$getxinverse()
+  if(!is.null(Xinverse)) {
+    message("getting cached data")
+    return(Xinverse)
+  }
+  data <- x$get()
+  Xinverse <- solve(data, ...)
+  x$setxinverse(Xinverse)
+  Xinverse
+        
 }
